@@ -1,0 +1,38 @@
+#!/bin/bash
+# -*- mode: shell-script; coding: utf-8 -*-
+
+# Identify where we are running (like "lab-210.lkpg.cendio.se")
+CURRENT_HOST=$(hostname)
+
+# Look for the configuration file specific to THIS node
+#    expected: ~/.thinlinc/session_config.lab-210.lkpg.cendio.se
+CONFIG_FILE="$HOME/.thinlinc/.ood-secrets/session_config.${CURRENT_HOST}"
+
+if [ -f "$CONFIG_FILE" ]; then
+    source "$CONFIG_FILE"
+else
+    echo "no OOD session conf found" >&2
+    exit 1
+fi
+
+# Propagate TERM signal to tl-run-profile if available
+function on_term {
+    if [ -n "$pid" ]; then
+        kill -TERM $pid
+    else
+        exit
+    fi
+}
+trap on_term SIGTERM
+
+# Run all scripts in xstartup.d
+source "${TLPREFIX}/libexec/tl-run-xstartup.d"
+
+# Start the profile
+srun --jobid=${OOD_JOB_ID} /bin/bash -c "${TLPREFIX}/libexec/tl-run-profile" &
+pid=$!
+wait $pid
+echo "Profile command exited with exit code $?" >&2
+
+# Run all scripts in xlogout.d
+source "${TLPREFIX}/libexec/tl-run-xlogout.d"

@@ -1,0 +1,8 @@
+---
+name: ThinLinc
+icon: fa://desktop
+category: Interactive Apps
+subcategory: Desktops
+role: batch_connect
+description: |
+  This app launch an interactive desktop environment as a ThinLinc session.
