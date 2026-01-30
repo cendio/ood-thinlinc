@@ -1,0 +1,8 @@
+export client_path="<%= session.staged_root.join(".tlclient") %>"
+
+# https://www.cendio.com/resources/docs/tag/client_config_params.html
+cat > "$client_path" << EOF
+LOGIN_NAME=${user}
+SERVER_NAME=${host}
+REMOVE_CONFIGURATION=1
+EOF
