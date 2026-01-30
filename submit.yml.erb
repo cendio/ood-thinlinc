@@ -1,0 +1,23 @@
+---
+batch_connect:
+  template: basic
+  conn_file: "connection.yml"
+  conn_params:
+    - host
+    - port
+    - user
+    - job_id
+    - password
+    - client_path
+
+# NOTE: For the native client support to work you need:
+# 1. Direct SSH access between users and the compute nodes/ThinLinc servers
+# 2. Set the custom virtual host directives in the installation.md
+# 3. Change the enabled_client variable in view.html.erb
+
+script:
+  job_name: "thinlinc"
+  native:
+    - "--ntasks-per-node=<%= bc_num_slots %>"
+    - "--gres=gpu:0"
+    - "--mem=<%= num_mem %>G"

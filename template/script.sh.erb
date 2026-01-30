@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+if [[ -z "$SLURM_JOB_ID" ]]; then
+    echo "Error:"
+    echo "Could not determine the Slurm job id."
+    echo "Exiting..."
+    exit 1
+fi
+
+OOD_SECRETS_ROOT="$HOME/.thinlinc/.ood-secrets"
+
+create_password_hash_file() {
+    mkdir -p $OOD_SECRETS_ROOT
+
+    SECRET_FILE="$OOD_SECRETS_ROOT/job-$SLURM_JOB_ID"
+    USER_SECRET_HASH=$(openssl passwd -6 "$password")
+    echo "$USER_SECRET_HASH" > "$SECRET_FILE"
+    chmod 600 $SECRET_FILE
+    unset USER_SECRET_HASH
+}
+
+CONFIG_FILE="$OOD_SECRETS_ROOT/session_config.$(hostname)"
+setup_node_config() {
+    cat > "$CONFIG_FILE" <<- EOL
+export OOD_JOB_ID="${SLURM_JOB_ID}"
+EOL
+}
+
+create_password_hash_file
+setup_node_config
+
+echo "Session is running. Press Delete in the dashboard to end the session."
+tail -f /dev/null

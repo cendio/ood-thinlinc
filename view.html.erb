@@ -1,0 +1,56 @@
+<%
+  webaccess_url = "/rnode/#{host}/#{port}/"
+  enabled_client = "web"                   # Supported values: web, native, both
+  pam_token = "#{job_id}:#{password}"
+  %>
+
+<% if enabled_client == "web" || enabled_client == "both" %>
+<button
+  type="button"
+  class="btn btn-primary"
+  onclick="connect_<%= job_id %>();">
+  <i class="fa fa-sign-in"></i>
+  Connect using the browser
+</button>
+
+<form id="loginForm_<%= job_id %>" method="post" action="<%= webaccess_url %>" target="_blank" style="display: none;">
+  <input type="hidden" name="username" value="<%= user %>">
+  <input type="hidden" name="pamresponse" value="<%= pam_token %>">
+  <input type="hidden" name="loginsubmit" value="1">
+</form>
+
+<script type="text/javascript">
+  function connect_<%= job_id %>() {
+    const form = document.getElementById("loginForm_<%= job_id %>");
+    form.submit();
+  }
+</script>
+<% end %>
+
+<% if enabled_client == "native" || enabled_client == "both" %>
+<button
+  type="button"
+  class="btn btn-primary"
+  onclick="download_<%= job_id %>();">
+  <i class="fa fa-sign-in"></i>
+  Connect using the native client
+</button>
+
+<script type="text/javascript">
+  function download_<%= job_id %>() {
+      const oodConfigElement = document.getElementById("ood_config");
+      const rootPath = oodConfigElement.dataset.rootPath;
+      const fullPath = `${rootPath}files/fs<%= client_path %>`
+
+      const link = document.createElement('a');
+      link.href = fullPath;
+      link.download = `<%= job_id %>.tlclient`;
+      link.style.display = 'none';
+
+      document.body.appendChild(link);
+      link.click();
+
+      document.body.removeChild(link);
+  }
+</script>
+<% end %>

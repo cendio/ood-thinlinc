@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+echo "Starting job ${SLURM_JOB_ID} on node(s) ${SLURM_JOB_NODELIST}."
+echo "Checking for other '${SLURM_JOB_NAME}' jobs..."
+
+OTHER_JOB_IDS=$(squeue -h -o "%i" -u "${USER}" -w "${SLURM_JOB_NODELIST}" -t RUNNING | grep -v "^${SLURM_JOB_ID}$")
+
+if [ -n "${OTHER_JOB_IDS}" ]; then
+  echo "Found other running jobs: ${OTHER_JOB_IDS}"
+
+  JOB_LIST=$(echo "${OTHER_JOB_IDS}" | tr '\n' ',' | sed 's/,$//')
+  if scontrol show jobid -dd "${JOB_LIST}" | grep -q "${SLURM_JOB_NAME}"; then
+    echo "Error: Found another '${SLURM_JOB_NAME}' job running on this node."
+    echo "Requesting requeue for job ${SLURM_JOB_ID}..."
+    scontrol requeue ${SLURM_JOB_ID}
+    exit 0
+  fi
+fi
+echo "No other '${SLURM_JOB_NAME}' jobs found. Proceeding with launch."
+
+# Export the module function if it exists
+[[ $(type -t module) == "function" ]] && export -f module
+
+export host="$(hostname)"
+export port="$(tl-config /webaccess/listen_port)"
+export user="$USER"
+export job_id="$SLURM_JOB_ID"
+export password="$(head -c 32 /dev/urandom | base64)"
+
+source ./setup_native_client.sh

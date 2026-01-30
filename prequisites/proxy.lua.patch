@@ -1,0 +1,30 @@
+diff --git a/opt/ood/mod_ood_proxy/lib/ood/proxy.lua b/proxy.lua
+index 81ce24c..031d3f0 100644
+--- a/opt/ood/mod_ood_proxy/lib/ood/proxy.lua
++++ b/proxy.lua
+@@ -4,9 +4,22 @@
+   Modify a given request to utilize mod_proxy for reverse proxying.
+ --]]
+ function set_reverse_proxy(r, conn)
+-  -- find protocol used by parsing the request headers
+-  local protocol = (r.headers_in['Upgrade'] and "ws://" or "http://")
+-
++    -- find protocol used by parsing the request headers
++    -- Check if an upstream port was set for reverse proxies.
++    local upstreamPort = nil
++    local isUpstreamPortSet = (r.subprocess_env['MATCH_PORT'] and 'true' or 'false')
++    if isUpstreamPortSet == 'true' then
++        upstreamPort = r.subprocess_env['MATCH_PORT']
++    end
++
++    -- Default to ws:// or http:// protocols to upstream hosts
++    local protocol = (r.headers_in['Upgrade'] and "ws://" or "http://")
++    if upstreamPort then
++        -- If specified port was used, then use secure protocols
++        if upstreamPort == '4443' then
++    protocol = (r.headers_in['Upgrade'] and "wss://" or "https://")
++        end
++    end
+ 
+   -- define reverse proxy destination using connection object
+   if conn.socket then
