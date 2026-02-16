@@ -6,7 +6,7 @@
 5. Configure ThinLinc to start sessions under SLURM's control
 6. Set up PAM module pam_tlpasswd for automatic login
 
-Chapter 1-3 are for the Open OnDemand **login node** and chapter 4-5 are for
+Chapter 1-3 are for the Open OnDemand **login node** and chapter 4-6 are for
 the **compute nodes**.
 
 # 1. Configure redirection for OOD
@@ -151,7 +151,7 @@ OnDemand job. Both of these steps are done on the **Compute nodes**.
 1. [Download](https://github.com/cendio/ood-thinlinc/releases/download/v1.0/pam_tlpasswd.so) or [build](/prequisites/pam_tlpasswd) the PAM module `pam_tlpasswd`.
 
 2. Install the PAM module `pam_tlpasswd`, you may need to reconfigure the target path to
-   your PAM modules directory.
+   your PAM modules directory. *The target path may differ depending on your distro.*
 ```
 sudo install pam_tlpasswd.so /lib64/security/pam_tlpasswd.so
 ```
@@ -165,7 +165,7 @@ auth	   [success=done ignore=ignore default=die] pam_tlpasswd.so
 1. [Download](https://github.com/cendio/ood-thinlinc/releases/download/v1.0/ood_thinlinc_cleanup.sh)
    or scp the [clean up script](/prequisites/ood_thinlinc_cleanup.sh).
 
-2. Install the clean up script
+2. Install the clean up script. *The target path may be any other place, just make sure it matches the path in step 3*
 ```
 sudo cp ood_thinlinc_cleanup.sh /etc/slurm/ood_thinlinc_cleanup.sh
 ```
