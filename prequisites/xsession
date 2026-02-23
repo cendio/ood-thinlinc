@@ -19,8 +19,8 @@ else
 fi
 
 # Check if there is an active ThinLinc job
-if ! squeue -u "$USER" -h -o %j | grep -q "thinlinc"; then
-    echo "No active ThinLinc jobs found for user $USER"
+if ! squeue -u "$USER" -w "$OOD_JOB_NODE" -h -o %j | grep -q "thinlinc"; then
+    echo "No active ThinLinc jobs found for user $USER on this node."
     exit 1
 fi
 
