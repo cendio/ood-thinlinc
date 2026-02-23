@@ -63,47 +63,9 @@ restart the web server running the OOD instance.
 server on the **compute node**.
 
 # 4. Configure ThinLinc to start sessions under SLURM's control
-Navigate to `/opt/thinlinc/etc/xsession` and overrwrite the file with the following:
-```
-#!/bin/bash
-# -*- mode: shell-script; coding: utf-8 -*-
-#
-# Copyright 2002-2014 Cendio AB.
-# For more information, see http://www.cendio.com
-
-# Identify where we are running (like "lab-210.lkpg.cendio.se")
-CURRENT_HOST=$(hostname)
-
-# Look for the configuration file specific to THIS node
-#    expected: ~/.thinlinc/session_config.lab-210.lkpg.cendio.se
-CONFIG_FILE="$HOME/.thinlinc/.ood-secrets/session_config.${CURRENT_HOST}"
-
-if [ -f "$CONFIG_FILE" ]; then
-    source "$CONFIG_FILE"
-else
-    echo "No OOD session conf found" >&2
-    exit 1
-fi
-
-# Check if there is an active ThinLinc job
-if ! scontrol show jobid -dd "${OOD_JOB_ID}" | grep -q "thinlinc"; then
-    echo "No active ThinLinc jobs"
-    exit 1
-fi
-
-# Set language on Debian based systems
-if [ -r /etc/default/locale ]; then
-    source /etc/default/locale
-    export LANG LANGUAGE LC_NUMERIC LC_TIME LC_MONETARY LC_PAPER 
-    export LC_IDENTIFICATION LC_NAME LC_ADDRESS LC_TELEPHONE LC_MEASUREMENT
-fi
-
-# Log system/distribution information
-source ${TLPREFIX}/libexec/log_sysinfo.sh
-
-# Source the startup scripts with an srun wrapper
-srun --jobid=${OOD_JOB_ID} /bin/bash -c "source '${TLPREFIX}/etc/xstartup.default'"
-```
+Navigate to `/opt/thinlinc/etc/xsession` and overrwrite the file with the
+contents in [the provided xsession file](/prequisites/xsession). *Also available
+as a [direct download](https://github.com/cendio/ood-thinlinc/releases/download/v1.0/xsession).*
 
 # 5. Set up PAM module pam_tlpasswd for automatic login
 This chapter contains two steps. Installing the PAM module, then installing a
