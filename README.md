@@ -1,3 +1,6 @@
+# Important notice
+Unfortunately, some unforeseen issues with the reverse proxy support has surfaced. Currently, we can not guarantee a smooth experience. Therefore, this beta release is put on hold for a short while. Sorry!
+
 # ThinLinc for Open OnDemand (Beta Version)
 Welcome to the beta release of ThinLinc for Open OnDemand (OOD). 
 
