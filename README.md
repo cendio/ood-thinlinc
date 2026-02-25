@@ -1,5 +1,15 @@
 # Important notice
-Unfortunately, some unforeseen issues with the reverse proxy support has surfaced. Currently, we can not guarantee a smooth experience. Therefore, this beta release is put on hold for a short while. Sorry!
+Unfortunately, some unforeseen issues with the reverse proxy support has surfaced.
+Currently, we can not guarantee a smooth experience. Therefore, a temporary fix
+has been added in Step 1 of the [installation document](installation.md).
+
+Due to a [bug in Mozilla Firefox](https://bugzilla.mozilla.org/show_bug.cgi?id=2003819),
+a second POST request is made on the Web Access side. This plays poorly together
+with the relative node paths in OOD at this moment.
+
+To fix this, we substitute the response body returned from the `/connect`
+path. Please see the [documentation](https://www.cendio.com/resources/docs/tag-devel/html/reverse_proxy.html)
+for the correct and expected setup.
 
 # ThinLinc for Open OnDemand (Beta Version)
 Welcome to the beta release of ThinLinc for Open OnDemand (OOD). 

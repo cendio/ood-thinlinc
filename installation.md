@@ -16,7 +16,15 @@ secure_rnode_uri: '/secure-rnode'
 ssl_proxy:
   - 'SSLProxyCheckPeerCN Off'
   - 'SSLProxyCheckPeerName Off'
+
+custom_location_directives:
+  - '<If "%{REQUEST_URI} =~ m|^/secure-rnode/([^/]+)/(\d+)/connect/\1|">'
+  - '  AddOutputFilterByType SUBSTITUTE text/html application/javascript'
+  - '  Substitute "s|https://([^/:]+):(\d+)/|/secure-rnode/$1/$2/|i"'
+  - '</If>'
 ```
+
+**NOTE**: Read about why the `custom_location_directives` is set in the [README](README.MD).
 
 Should you want to enable Native client support, this custom virtual host
 directive will be needed to set the correct MIME-type for the ThinLinc
