@@ -17,7 +17,8 @@
   <input type="hidden" name="username" value="<%= user %>">
 <% if auto_login %>
 <% pam_token = "#{job_id}:#{password}" %>
-  <input type="hidden" name="pamresponse" value="<%= pam_token %>">
+  <input type="hidden" name="pamresponse" value="<%= pam_token %>"> <!-- pre  4.21.0 -->
+  <input type="hidden" name="password" value="<%= pam_token %>">    <!-- post 4.21.0 -->
   <input type="hidden" name="loginsubmit" value="1">
   <% end %>
 </form>
