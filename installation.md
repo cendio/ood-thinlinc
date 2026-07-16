@@ -3,7 +3,7 @@
 2. Install the application on OOD
 3. Install and configure the ThinLinc server on the compute node
 4. Configure ThinLinc to start sessions under SLURM's control
-5. Set up PAM module pam_tlpasswd for automatic login
+5. Configure authentication for ThinLinc sessions (optional)
 
 Chapter 1-2 are for the Open OnDemand **login node** and chapter 3-5 are for
 the **compute nodes**.
@@ -75,27 +75,15 @@ Navigate to `/opt/thinlinc/etc/xsession` and overrwrite the file with the
 contents in [the provided xsession file](/prequisites/xsession). *Also available
 as a [direct download](https://github.com/cendio/ood-thinlinc/releases/download/v1.0/xsession).*
 
-# 5. Set up PAM module pam_tlpasswd for automatic login
-This chapter contains two steps. Installing the PAM module, then installing a
-Slurm Epilog script to clean up the temporary password files created by the Open
-OnDemand job. Both of these steps are done on the **Compute nodes**.
-
-## Install the PAM module pam_tlpasswd
-1. [Download](https://github.com/cendio/ood-thinlinc/releases/download/v1.0/pam_tlpasswd.so)
-   or [build](/prequisites/pam_tlpasswd) the PAM module `pam_tlpasswd`.
-
-2. Install the PAM module `pam_tlpasswd`, you may need to reconfigure the target path to
-   your PAM modules directory. *The target path may differ depending on your distro.*
-```
-sudo install pam_tlpasswd.so /lib64/security/pam_tlpasswd.so
-```
-
-3. Configure `/etc/pam.d/sshd` to add this in the top of the file:
-```
-auth	   [success=done ignore=ignore default=die] pam_tlpasswd.so
-```
-
 ## Install the Slurm Epilog clean up script
+Each session writes a small per-node config file
+(`~/.thinlinc/.ood-secrets/session_config.<host>`, containing the job id and node)
+that the xsession reads to bind the desktop to the correct SLURM job. A Slurm
+Epilog script removes these files when the job ends. This is **required regardless
+of which authentication option** you choose in the next chapter — the automatic
+login option (Option 2) reuses the same script to also clean up its temporary
+password files.
+
 1. [Download](https://github.com/cendio/ood-thinlinc/releases/download/v1.0/ood_thinlinc_cleanup.sh)
    or scp the [clean up script](/prequisites/ood_thinlinc_cleanup.sh).
 
@@ -114,3 +102,12 @@ Debugging The Epilog clean up script:
 ```
 sudo journalctl -t tlCleanupEpilog
 ```
+
+# 5. Configure authentication for ThinLinc sessions (optional)
+When a user connects to their ThinLinc session, they need to authenticate. There
+are two supported options: no automatic login, which presents the ThinLinc Web
+Access login prompt without any setup required, or automatic login using the
+custom PAM module `pam_tlpasswd`.
+
+See the [authentication document](authentication.md) for a description of both
+options and how to set them up.
