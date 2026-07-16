@@ -75,6 +75,18 @@ Navigate to `/opt/thinlinc/etc/xsession` and overrwrite the file with the
 contents in [the provided xsession file](/prequisites/xsession). *Also available
 as a [direct download](https://github.com/cendio/ood-thinlinc/releases/download/v1.0/xsession).*
 
+**NOTE**: The choice of desktop environment affects how well the session stays
+within its SLURM allocation. Since GNOME 3.34, `gnome-session` launches the
+whole session through the per-user systemd instance (`user@<uid>.service`, under
+`user.slice`), so the desktop's processes end up outside the cgroup that SLURM
+created for the job. The desktop still starts and runs, but SLURM can no longer
+reliably enforce the job's resource limits on it or clean it up when the job
+ends.
+
+**MATE** and **XFCE** do not forcefully delegate session startup to systemd, so
+their processes stay within the SLURM allocation. We recommend MATE or XFCE,
+which are also lighter-weight and make better use of the allocated resources.
+
 ## Install the Slurm Epilog clean up script
 Each session writes a small per-node config file
 (`~/.thinlinc/.ood-secrets/session_config.<host>`, containing the job id and node)
