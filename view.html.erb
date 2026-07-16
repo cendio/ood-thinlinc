@@ -1,7 +1,7 @@
 <%
-  webaccess_url = "/secure-rnode/#{host}/#{port}/"
+  webaccess_url  = "/secure-rnode/#{host}/#{port}/"
   enabled_client = "web"                   # Supported values: web, native, both
-  pam_token = "#{job_id}:#{password}"
+  auto_login     = false                   # Set to true ONLY if the pam_tlpasswd module is installed (see authentication.md)
   %>
 
 <% if enabled_client == "web" || enabled_client == "both" %>
@@ -15,8 +15,11 @@
 
 <form id="loginForm_<%= job_id %>" method="post" action="<%= webaccess_url %>" target="_blank" style="display: none;">
   <input type="hidden" name="username" value="<%= user %>">
+<% if auto_login %>
+<% pam_token = "#{job_id}:#{password}" %>
   <input type="hidden" name="pamresponse" value="<%= pam_token %>">
   <input type="hidden" name="loginsubmit" value="1">
+  <% end %>
 </form>
 
 <script type="text/javascript">
